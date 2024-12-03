@@ -1,0 +1,50 @@
+﻿@using Microsoft.JSInterop
+@using BbnkWAsmLib
+@inherits LayoutComponentBase
+@inject HttpClient Http
+
+@* <div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+
+</div> *@
+@Body
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+
+@inject IJSRuntime JSRuntime
+
+@code{
+
+    private IEnumerable<string>? data;
+    private string strdata = "";
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (firstRender){
+
+            BbnkWasm.Instance = new BbnkWasm(JSRuntime);
+
+            object o = BbnkWasm.Instance.WsamStarted("123");
+
+       
+            data = await Http.GetFromJsonAsync<IEnumerable<string>>("api/BbnkApi");
+            strdata = await Http.GetStringAsync("api/BbnkApi/12345");
+        }
+    }
+}
